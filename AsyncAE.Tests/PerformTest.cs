@@ -79,6 +79,23 @@ namespace AsyncAE.Tests
         }
 
         [Fact]
+        public void HandleNestedPerform()
+        {
+            const int unexpected = 200;
+            const int expected = 100;
+            using (new EffectHandler()
+                       .Handle((IntPerform _) => unexpected))
+            {
+                using (new EffectHandler()
+                           .Handle((IntPerform _) => expected))
+                {
+                    var ret = CallIntPerformFunc();
+                    Assert.Equal(expected, ret);
+                }
+            }
+        }
+
+        [Fact]
         public void HandlePerformStackInside()
         {
             int NoCall(IntPerform _) => throw new NotSupportedException();
