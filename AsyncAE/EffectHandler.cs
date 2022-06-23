@@ -1,6 +1,6 @@
 namespace AsyncAE
 {
-    using AsyncAE.Internal;
+    using Internal;
 
     /// <summary>
     /// Class for handling effect

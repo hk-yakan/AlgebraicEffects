@@ -1,109 +1,109 @@
-namespace AsyncAE.Tests;
-
-
-public class SimplePerformTest
+namespace AsyncAE.Tests
 {
-    [Fact]
-    public void HandleStrPerform()
+    public class SimplePerformTest
     {
-        string Func() => new StrPerform();
-        const string Expected = "Call it!";
-        using (new EffectHandler()
-                .Handle((StrPerform p) => Expected))
+        [Fact]
+        public void HandleStrPerform()
         {
-            var ret = Func();
-            Assert.Equal(Expected, ret);
+            string Func() => new StrPerform();
+            const string expected = "Call it!";
+            using (new EffectHandler()
+                       .Handle((StrPerform _) => expected))
+            {
+                var ret = Func();
+                Assert.Equal(expected, ret);
+            }
         }
-    }
 
-    [Fact]
-    public void HandleStrPerformWithNull()
-    {
-        string Func() => new StrPerform(null);
-        const string Expected = "Call it!";
-        using (new EffectHandler()
-                   .Handle((StrPerform p) => Expected))
+        [Fact]
+        public void HandleStrPerformWithNull()
         {
-            var ret = Func();
-            Assert.Equal(Expected, ret);
+            string Func() => new StrPerform(null);
+            const string expected = "Call it!";
+            using (new EffectHandler()
+                       .Handle((StrPerform _) => expected))
+            {
+                var ret = Func();
+                Assert.Equal(expected, ret);
+            }
         }
-    }
 
-    [Fact]
-    public void HandleIntPerform()
-    {
-        int Func() => new IntPerform();
-        const int Expected = 10;
-        using (new EffectHandler()
-                   .Handle((IntPerform p) => Expected))
+        [Fact]
+        public void HandleIntPerform()
         {
-            var ret = Func();
-            Assert.Equal(Expected, ret);
+            int Func() => new IntPerform();
+            const int expected = 10;
+            using (new EffectHandler()
+                       .Handle((IntPerform _) => expected))
+            {
+                var ret = Func();
+                Assert.Equal(expected, ret);
+            }
         }
-    }
 
-    [Fact]
-    public void HandleIntPerformWithNull()
-    {
-        int Func() => new IntPerform(null);
-        const int Expected = 10;
-        using (new EffectHandler()
-                   .Handle((IntPerform p) => Expected))
+        [Fact]
+        public void HandleIntPerformWithNull()
         {
-            var ret = Func();
-            Assert.Equal(Expected, ret);
+            int Func() => new IntPerform(null);
+            const int expected = 10;
+            using (new EffectHandler()
+                       .Handle((IntPerform _) => expected))
+            {
+                var ret = Func();
+                Assert.Equal(expected, ret);
+            }
         }
-    }
 
-    [Fact]
-    public void HandleFloatPerform()
-    {
-        float Func() => new FloatPerform();
-        const float Expected = 10.0f;
-        using (new EffectHandler()
-                   .Handle((FloatPerform p) => Expected))
+        [Fact]
+        public void HandleFloatPerform()
         {
-            var ret = Func();
-            Assert.Equal(Expected, ret);
+            float Func() => new FloatPerform();
+            const float expected = 10.0f;
+            using (new EffectHandler()
+                       .Handle((FloatPerform _) => expected))
+            {
+                var ret = Func();
+                Assert.Equal(expected, ret);
+            }
         }
-    }
 
-    [Fact]
-    public void HandleFloatPerformWithNull()
-    {
-        float Func() => new FloatPerform(null);
-        const float Expected = 10.0f;
-        using (new EffectHandler()
-                   .Handle((FloatPerform p) => Expected))
+        [Fact]
+        public void HandleFloatPerformWithNull()
         {
-            var ret = Func();
-            Assert.Equal(Expected, ret);
+            float Func() => new FloatPerform(null);
+            const float expected = 10.0f;
+            using (new EffectHandler()
+                       .Handle((FloatPerform _) => expected))
+            {
+                var ret = Func();
+                Assert.Equal(expected, ret);
+            }
         }
-    }
 
-    [Fact]
-    public void HandleBoolPerform()
-    {
-        bool Func() => new BoolPerform();
-        const bool Expected = true;
-        using (new EffectHandler()
-                   .Handle((BoolPerform p) => Expected))
+        [Fact]
+        public void HandleBoolPerform()
         {
-            var ret = Func();
-            Assert.Equal(Expected, ret);
+            bool Func() => new BoolPerform();
+            const bool expected = true;
+            using (new EffectHandler()
+                       .Handle((BoolPerform _) => expected))
+            {
+                var ret = Func();
+                Assert.Equal(expected, ret);
+            }
         }
-    }
 
-    [Fact]
-    public void HandleBoolPerformWithNull()
-    {
-        bool Func() => new BoolPerform(null);
-        const bool Expected = true;
-        using (new EffectHandler()
-                   .Handle((BoolPerform p) => Expected))
+        [Fact]
+        public void HandleBoolPerformWithNull()
         {
-            var ret = Func();
-            Assert.Equal(Expected, ret);
+            bool Func() => new BoolPerform(null);
+            const bool expected = true;
+            using (new EffectHandler()
+                       .Handle((BoolPerform _) => expected))
+            {
+                var ret = Func();
+                Assert.Equal(expected, ret);
+            }
         }
     }
 }
