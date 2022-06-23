@@ -7,16 +7,16 @@ namespace AsyncAE
     /// </summary>
     public sealed class EffectHandler : IDisposable, IAsyncDisposable
     {
-        private readonly AlgebraicContext _holder;
+        private readonly AlgebraicEffectsManager.CallContext _context;
 
         private readonly Dictionary<Type, Delegate> _funcMap = new Dictionary<Type, Delegate>();
         private readonly Dictionary<Type, Delegate> _asyncFuncMap = new Dictionary<Type, Delegate>();
 
         public EffectHandler()
         {
-            _holder = AlgebraicEffectsManager
-                    .Instance.Value.GetContextHolder();
-            _holder.AddHandler(this);
+            _context = AlgebraicEffectsManager
+                    .Instance.Value.GetContext();
+            _context.AddHandler(this);
         }
 
         public bool HasHandler(Type type, bool enableAsync)
@@ -89,7 +89,7 @@ namespace AsyncAE
 
         private void DisposeInternal()
         {
-            _holder.RemoveHandler(this);
+            _context.RemoveHandler(this);
             _asyncFuncMap.Clear();
             _funcMap.Clear();
         }
