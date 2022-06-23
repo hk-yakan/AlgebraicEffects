@@ -1,6 +1,6 @@
 namespace AsyncAE
 {
-    using AsyncAE.Internal;
+    using Internal;
 
     /// <summary>
     /// Class for handling effect
@@ -82,6 +82,7 @@ namespace AsyncAE
 
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
+            // TODO: 非同期実行中の後始末
             // await this._holder.Wait();
             DisposeInternal();
         }

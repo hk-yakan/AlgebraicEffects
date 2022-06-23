@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace AsyncAE
 {
-    using AsyncAE.Internal;
+    using Internal;
 
     /// <summary>
     /// Abstract class for provides perform logic.

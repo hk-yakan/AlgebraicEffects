@@ -1,150 +1,136 @@
-namespace AsyncAE.Tests;
-
-
-using System.Diagnostics;
-
-public class PerformAsyncTest
+namespace AsyncAE.Tests
 {
-    private static string CallStrPerformFunc()
+    public class PerformAsyncTest
     {
-        return new StrPerform(null);
-    }
-
-    private static int CallIntPerformFunc()
-    {
-        return new IntPerform(null);
-    }
-
-    private static ValueTask<string> CallStrPerformFuncAsync()
-    {
-        return new StrPerform(null);
-    }
-
-    private static ValueTask<int> CallIntPerformFuncAsync()
-    {
-        return new IntPerform(null);
-    }
-
-    [Fact]
-    public async void HandleStrPerformAsync()
-    {
-        const string Expected = "Call it!";
-        await using (new EffectHandler()
-                .Handle((StrPerform p) => Expected))
+        private static string CallStrPerformFunc()
         {
-            await Task.Delay(10);
-            var ret = CallStrPerformFunc();
-            Assert.Equal(Expected, ret);
+            return new StrPerform(null);
         }
-    }
 
-    [Fact]
-    public async void HandleIntPerformAsync()
-    {
-        const int Expected = 100;
-        await using (new EffectHandler()
-                .Handle((IntPerform p) => Expected))
+        private static int CallIntPerformFunc()
         {
-            await Task.Delay(10);
-            var ret = CallIntPerformFunc();
-            Assert.Equal(Expected, ret);
+            return new IntPerform(null);
         }
-    }
 
-    [Fact]
-    public async void HandleStrPerformAsyncWithAsyncHandler()
-    {
-        const string Expected = "Call it!";
-        await using (new EffectHandler()
-                .HandleAsync(async (StrPerform p) =>
+        private static ValueTask<string> CallStrPerformFuncAsync()
+        {
+            return new StrPerform(null);
+        }
+
+        private static ValueTask<int> CallIntPerformFuncAsync()
+        {
+            return new IntPerform(null);
+        }
+
+        [Fact]
+        public async void HandleStrPerformAsync()
+        {
+            const string expected = "Call it!";
+            await using (new EffectHandler()
+                             .Handle((StrPerform _) => expected))
+            {
+                await Task.Delay(10);
+                var ret = CallStrPerformFunc();
+                Assert.Equal(expected, ret);
+            }
+        }
+
+        [Fact]
+        public async void HandleIntPerformAsync()
+        {
+            const int expected = 100;
+            await using (new EffectHandler()
+                             .Handle((IntPerform _) => expected))
+            {
+                await Task.Delay(10);
+                var ret = CallIntPerformFunc();
+                Assert.Equal(expected, ret);
+            }
+        }
+
+        [Fact]
+        public async void HandleStrPerformAsyncWithAsyncHandler()
+        {
+            const string expected = "Call it!";
+            await using (new EffectHandler()
+                             .HandleAsync(async (StrPerform _) =>
+                             {
+                                 await Task.Delay(10);
+                                 return expected;
+                             }))
+            {
+                await Task.Delay(10);
+                var ret = await CallStrPerformFuncAsync();
+                Assert.Equal(expected, ret);
+            }
+        }
+
+        [Fact]
+        public async void HandlePerformAsyncOnParallel()
+        {
+            const string expected1 = "Call it on thread 1";
+            const string expected2 = "Call it on thread 2";
+            async Task<string> Thread1()
+            {
+                await using (new EffectHandler().HandleAsync(async (StrPerform _) =>
+                             {
+                                 await Task.Delay(10);
+                                 return expected1;
+                             }))
                 {
                     await Task.Delay(10);
-                    return Expected;
-                }))
-        {
-            await Task.Delay(10);
-            var ret = await CallStrPerformFuncAsync();
-            Assert.Equal(Expected, ret);
-        }
-    }
-
-    [Fact]
-    public async void HandlePerformAsyncOnParallel()
-    {
-        const string Expected1 = "Call it on thread 1";
-        const string Expected2 = "Call it on thread 2";
-        async Task<string> Thread1()
-        {
-            await using (new EffectHandler().HandleAsync(async (StrPerform p) =>
-                         {
-                             await Task.Delay(10);
-                             return Expected1;
-                         }))
-            {
-                await Task.Delay(10);
-                return await CallStrPerformFuncAsync();
+                    return await CallStrPerformFuncAsync();
+                }
             }
-        }
 
-        async Task<string> Thread2()
-        {
-            await using (new EffectHandler().HandleAsync(async (StrPerform p) =>
-                         {
-                             await Task.Delay(10);
-                             return Expected2;
-                         }))
+            async Task<string> Thread2()
             {
-                await Task.Delay(10);
-                return await CallStrPerformFuncAsync();
+                await using (new EffectHandler().HandleAsync(async (StrPerform _) =>
+                             {
+                                 await Task.Delay(10);
+                                 return expected2;
+                             }))
+                {
+                    await Task.Delay(10);
+                    return await CallStrPerformFuncAsync();
+                }
             }
+
+            var results = await Task.WhenAll(Task.Run(Thread1), Task.Run(Thread2));
+            Assert.Equal(expected1, results[0]);
+            Assert.Equal(expected2, results[1]);
         }
 
-        var results = await Task.WhenAll(Task.Run(Thread1), Task.Run(Thread2));
-        Assert.Equal(Expected1, results[0]);
-        Assert.Equal(Expected2, results[1]);
-    }
-
-    [Fact]
-    public async void HandlePerformAsyncOnParallelThrowException()
-    {
-        async Task<Exception> Thread1()
+        [Fact]
+        public async void HandlePerformAsyncOnParallelThrowException()
         {
-            Debug.WriteLine(Thread.CurrentThread.ManagedThreadId);
-            const int Unexpected = 10;
-            await using (new EffectHandler().HandleAsync(async (IntPerform p) =>
-                         {
-                             await Task.Delay(10);
-                             throw new NotSupportedException();
-                             return Unexpected;
-                         }))
+            ValueTask<int> NoCall1(IntPerform _) => throw new NotSupportedException();
+            ValueTask<string> NoCall2(StrPerform _) => throw new NotSupportedException();
+
+            async Task<Exception> Thread1()
             {
-                await Task.Delay(10);
-                return Assert.Throws<NotImplementedException>(() => CallStrPerformFuncAsync());
+                await using (new EffectHandler().HandleAsync((Func<IntPerform, ValueTask<int>>)NoCall1))
+                {
+                    await Task.Delay(10);
+                    return Assert.Throws<NotImplementedException>(() => CallStrPerformFuncAsync());
+                }
             }
-        }
 
-        async Task<Exception> Thread2()
-        {
-            Debug.WriteLine(Thread.CurrentThread.ManagedThreadId);
-            const string Unexpected = "Call it on thread 2";
-            await using (new EffectHandler().HandleAsync(async (StrPerform p) =>
-                         {
-                             await Task.Delay(10);
-                             throw new NotSupportedException();
-                             return Unexpected;
-                         }))
+            async Task<Exception> Thread2()
             {
-                await Task.Delay(10);
-                return Assert.Throws<NotImplementedException>(() => CallIntPerformFuncAsync());
+                await using (new EffectHandler().HandleAsync((Func<StrPerform, ValueTask<string>>)NoCall2))
+                {
+                    await Task.Delay(10);
+                    return Assert.Throws<NotImplementedException>(() => CallIntPerformFuncAsync());
+                }
             }
+
+            var messages = await Task.WhenAll(
+                Task.Run(Thread1),
+                Task.Run(Thread2)
+            );
+            Assert.Equal("StrPerform is Uncaught.", messages[0].Message);
+            Assert.Equal("IntPerform is Uncaught.", messages[1].Message);
         }
-
-
-        var messages = await Task.WhenAll(
-            Task.Run(Thread1),
-            Task.Run(Thread2)
-        );
-        Assert.Equal("StrPerform is Uncaught.", messages[0].Message);
-        Assert.Equal("IntPerform is Uncaught.", messages[1].Message);
     }
 }
