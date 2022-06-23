@@ -18,7 +18,7 @@ namespace AsyncAE
         /// <value>Any type object.</value>
         public object? Message { get; }
 
-        private readonly AlgebraicContext _holder;
+        private readonly AlgebraicEffectsManager.CallContext _context;
 
         private readonly Func<Exception> _exceptionFactory;
 
@@ -27,8 +27,8 @@ namespace AsyncAE
             Message = param;
             _exceptionFactory = exceptionFactory
                     ?? new Func<Exception>(() => new NotImplementedException($"{GetType().Name} is Uncaught."));
-            _holder = AlgebraicEffectsManager
-                .Instance.Value.GetContextHolder();
+            _context = AlgebraicEffectsManager
+                .Instance.Value.GetContext();
         }
 
         public static implicit operator TRet(Perform<T, TRet> it) => it.Do();
@@ -37,7 +37,7 @@ namespace AsyncAE
 
         private TRet Do()
         {
-            var effect = _holder.GetHandler(typeof(T), false);
+            var effect = _context.GetHandler(typeof(T), false);
             if (effect == null)
             {
                 throw _exceptionFactory();
@@ -50,7 +50,7 @@ namespace AsyncAE
 
         private ValueTask<TRet> DoAsync()
         {
-            var effect = _holder.GetHandler(typeof(T), true);
+            var effect = _context.GetHandler(typeof(T), true);
             if (effect == null)
             {
                 throw _exceptionFactory();
