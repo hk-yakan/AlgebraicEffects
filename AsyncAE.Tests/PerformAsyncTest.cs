@@ -1,5 +1,16 @@
+// -----------------------------------------------------------------------------
+// Copyright (c) yakan_k 2022-2022.  All Rights Reserved.
+// Licensed under the MIT license.
+// See License.txt in the project root for license information.
+// -----------------------------------------------------------------------------
+// PROJECT : AsyncAE.Tests
+// FILE : PerformAsyncTest.cs
+
 namespace AsyncAE.Tests
 {
+    using System;
+    using System.Threading.Tasks;
+
     public class PerformAsyncTest
     {
         private static string CallStrPerformFunc()
@@ -109,7 +120,8 @@ namespace AsyncAE.Tests
 
             async Task<Exception> Thread1()
             {
-                await using (new EffectHandler().HandleAsync((Func<IntPerform, ValueTask<int>>)NoCall1))
+                await using (new EffectHandler().HandleAsync(
+                                 (Func<IntPerform, ValueTask<int>>)NoCall1))
                 {
                     await Task.Delay(10);
                     return Assert.Throws<NotImplementedException>(() => CallStrPerformFuncAsync());
@@ -118,7 +130,8 @@ namespace AsyncAE.Tests
 
             async Task<Exception> Thread2()
             {
-                await using (new EffectHandler().HandleAsync((Func<StrPerform, ValueTask<string>>)NoCall2))
+                await using (new EffectHandler().HandleAsync(
+                                 (Func<StrPerform, ValueTask<string>>)NoCall2))
                 {
                     await Task.Delay(10);
                     return Assert.Throws<NotImplementedException>(() => CallIntPerformFuncAsync());

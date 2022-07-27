@@ -1,22 +1,48 @@
+// -----------------------------------------------------------------------------
+// Copyright (c) yakan_k 2022-2022.  All Rights Reserved.
+// Licensed under the MIT license.
+// See License.txt in the project root for license information.
+// -----------------------------------------------------------------------------
+// PROJECT : AsyncAE
+// FILE : EffectHandler.cs
+
 namespace AsyncAE
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
     using Internal;
 
     /// <summary>
-    /// Class for handling effect
+    ///     Class for handling effect
     /// </summary>
     public sealed class EffectHandler : IDisposable, IAsyncDisposable
     {
+        private readonly Dictionary<Type, Delegate>
+            _asyncFuncMap = new Dictionary<Type, Delegate>();
+
         private readonly AlgebraicEffectsManager.CallContext _context;
 
         private readonly Dictionary<Type, Delegate> _funcMap = new Dictionary<Type, Delegate>();
-        private readonly Dictionary<Type, Delegate> _asyncFuncMap = new Dictionary<Type, Delegate>();
 
         public EffectHandler()
         {
             _context = AlgebraicEffectsManager
-                    .Instance.Value.GetContext();
+                .Instance.Value.GetContext();
             _context.AddHandler(this);
+        }
+
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            // TODO: 非同期実行中の後始末
+            // await this._holder.Wait();
+            DisposeInternal();
+        }
+
+        void IDisposable.Dispose()
+        {
+            DisposeInternal();
         }
 
         public bool HasHandler(Type type, bool enableAsync)
@@ -51,8 +77,8 @@ namespace AsyncAE
             var type = typeof(T);
             if (_funcMap
                     .FirstOrDefault(
-                        (pair) => pair.Key.IsAssignableFrom(type)
-                                  && pair.Value is Func<T, TRet>)
+                        pair => pair.Key.IsAssignableFrom(type)
+                                && pair.Value is Func<T, TRet>)
                     .Value is Func<T, TRet> handler)
             {
                 return handler;
@@ -66,25 +92,13 @@ namespace AsyncAE
             var type = typeof(T);
             if (_asyncFuncMap
                     .FirstOrDefault(
-                        (pair) => pair.Key.IsAssignableFrom(type)
-                                  && pair.Value is Func<T, ValueTask<TRet>>)
+                        pair => pair.Key.IsAssignableFrom(type)
+                                && pair.Value is Func<T, ValueTask<TRet>>)
                     .Value is Func<T, ValueTask<TRet>> handler)
             {
                 return handler;
             }
             return default;
-        }
-
-        void IDisposable.Dispose()
-        {
-            DisposeInternal();
-        }
-
-        async ValueTask IAsyncDisposable.DisposeAsync()
-        {
-            // TODO: 非同期実行中の後始末
-            // await this._holder.Wait();
-            DisposeInternal();
         }
 
         private void DisposeInternal()

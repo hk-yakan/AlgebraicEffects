@@ -1,0 +1,23 @@
+#nullable enable
+AsyncAE.EffectHandler
+AsyncAE.EffectHandler.EffectHandler() -> void
+AsyncAE.EffectHandler.Handle<T, TRet>(System.Func<T!, TRet>! handler) -> AsyncAE.EffectHandler!
+AsyncAE.EffectHandler.HandleAsync<T, TRet>(System.Func<T!, System.Threading.Tasks.ValueTask<TRet>>! asyncHandler) -> AsyncAE.EffectHandler!
+AsyncAE.EffectHandler.HasHandler(System.Type! type, bool enableAsync) -> bool
+AsyncAE.Impl.BoolPerform
+AsyncAE.Impl.BoolPerform.BoolPerform() -> void
+AsyncAE.Impl.BoolPerform.BoolPerform(object? param) -> void
+AsyncAE.Impl.FloatPerform
+AsyncAE.Impl.FloatPerform.FloatPerform() -> void
+AsyncAE.Impl.FloatPerform.FloatPerform(object? param) -> void
+AsyncAE.Impl.IntPerform
+AsyncAE.Impl.IntPerform.IntPerform() -> void
+AsyncAE.Impl.IntPerform.IntPerform(object? param) -> void
+AsyncAE.Impl.StrPerform
+AsyncAE.Impl.StrPerform.StrPerform() -> void
+AsyncAE.Impl.StrPerform.StrPerform(object? param) -> void
+AsyncAE.Perform<T, TRet>
+AsyncAE.Perform<T, TRet>.Message.get -> object?
+AsyncAE.Perform<T, TRet>.Perform(object? param, System.Func<System.Exception!>? exceptionFactory = null) -> void
+static AsyncAE.Perform<T, TRet>.implicit operator System.Threading.Tasks.ValueTask<TRet>(AsyncAE.Perform<T!, TRet>! it) -> System.Threading.Tasks.ValueTask<TRet>
+static AsyncAE.Perform<T, TRet>.implicit operator TRet(AsyncAE.Perform<T!, TRet>! it) -> TRet

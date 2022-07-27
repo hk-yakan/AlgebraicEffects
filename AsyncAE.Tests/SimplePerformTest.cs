@@ -1,3 +1,11 @@
+// -----------------------------------------------------------------------------
+// Copyright (c) yakan_k 2022-2022.  All Rights Reserved.
+// Licensed under the MIT license.
+// See License.txt in the project root for license information.
+// -----------------------------------------------------------------------------
+// PROJECT : AsyncAE.Tests
+// FILE : SimplePerformTest.cs
+
 namespace AsyncAE.Tests
 {
     public class SimplePerformTest
