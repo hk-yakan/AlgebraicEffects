@@ -1,14 +1,50 @@
+// -----------------------------------------------------------------------------
+// Copyright (c) yakan_k 2022-2022.  All Rights Reserved.
+// Licensed under the MIT license.
+// See License.txt in the project root for license information.
+// -----------------------------------------------------------------------------
+// PROJECT : AsyncAE
+// FILE : AlgebraicEffectsManager.cs
+
 namespace AsyncAE.Internal
 {
+    using System;
+    using System.Collections.Generic;
     using System.Diagnostics;
+    using System.Linq;
+    using System.Threading;
 
     /// <summary>
-    /// Manager class for AlgebraicEffects.
+    ///     Manager class for AlgebraicEffects.
     /// </summary>
     internal sealed class AlgebraicEffectsManager
     {
+        private readonly AsyncLocal<CallContext> _holder = new AsyncLocal<CallContext>();
+
+        static AlgebraicEffectsManager()
+        {
+            Instance = new Lazy<AlgebraicEffectsManager>(
+                () => new AlgebraicEffectsManager(), true
+            );
+        }
+
+        public static Lazy<AlgebraicEffectsManager> Instance { get; }
+
         /// <summary>
-        /// Context class which contains corresponded handlers.
+        ///     Gets or creates an call context.
+        /// </summary>
+        /// <returns>ContextHolder</returns>
+        internal CallContext GetContext()
+        {
+            lock (this)
+            {
+                _holder.Value ??= new CallContext();
+                return _holder.Value;
+            }
+        }
+
+        /// <summary>
+        ///     Context class which contains corresponded handlers.
         /// </summary>
         internal sealed class CallContext
         {
@@ -18,7 +54,7 @@ namespace AsyncAE.Internal
             public EffectHandler? GetHandler(Type type, bool enableAsync)
             {
                 return _stack
-                    .FirstOrDefault((handler) => handler.HasHandler(type, enableAsync));
+                    .FirstOrDefault(handler => handler.HasHandler(type, enableAsync));
             }
 
             public void AddHandler(EffectHandler handler)
@@ -32,30 +68,6 @@ namespace AsyncAE.Internal
                 {
                     Debug.Assert(h == handler);
                 }
-            }
-        }
-
-        public static Lazy<AlgebraicEffectsManager> Instance { get; }
-
-        private readonly AsyncLocal<CallContext> _holder = new AsyncLocal<CallContext>();
-
-        static AlgebraicEffectsManager()
-        {
-            Instance = new Lazy<AlgebraicEffectsManager>(
-                () => new AlgebraicEffectsManager(), isThreadSafe: true
-            );
-        }
-
-        /// <summary>
-        /// Gets or creates an call context.
-        /// </summary>
-        /// <returns>ContextHolder</returns>
-        internal CallContext GetContext()
-        {
-            lock (this)
-            {
-                _holder.Value ??= new CallContext();
-                return _holder.Value;
             }
         }
     }

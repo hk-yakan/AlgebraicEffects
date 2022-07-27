@@ -1,23 +1,26 @@
-using System.Diagnostics;
+// -----------------------------------------------------------------------------
+// Copyright (c) yakan_k 2022-2022.  All Rights Reserved.
+// Licensed under the MIT license.
+// See License.txt in the project root for license information.
+// -----------------------------------------------------------------------------
+// PROJECT : AsyncAE
+// FILE : Perform.cs
 
 namespace AsyncAE
 {
+    using System;
+    using System.Diagnostics;
+    using System.Threading.Tasks;
     using Internal;
 
     /// <summary>
-    /// Abstract class for provides perform logic.
+    ///     Abstract class for provides perform logic.
     /// </summary>
     /// <typeparam name="T"></typeparam>
     /// <typeparam name="TRet"></typeparam>
     public abstract class Perform<T, TRet>
-           where T : Perform<T, TRet>
+        where T : Perform<T, TRet>
     {
-        /// <summary>
-        /// Retrieves message from perform.
-        /// </summary>
-        /// <value>Any type object.</value>
-        public object? Message { get; }
-
         private readonly AlgebraicEffectsManager.CallContext _context;
 
         private readonly Func<Exception> _exceptionFactory;
@@ -26,14 +29,27 @@ namespace AsyncAE
         {
             Message = param;
             _exceptionFactory = exceptionFactory
-                    ?? new Func<Exception>(() => new NotImplementedException($"{GetType().Name} is Uncaught."));
+                                ?? new Func<Exception>(() =>
+                                    new NotImplementedException($"{GetType().Name} is Uncaught."));
             _context = AlgebraicEffectsManager
                 .Instance.Value.GetContext();
         }
 
-        public static implicit operator TRet(Perform<T, TRet> it) => it.Do();
+        /// <summary>
+        ///     Retrieves message from perform.
+        /// </summary>
+        /// <value>Any type object.</value>
+        public object? Message { get; }
 
-        public static implicit operator ValueTask<TRet>(Perform<T, TRet> it) => it.DoAsync();
+        public static implicit operator TRet(Perform<T, TRet> it)
+        {
+            return it.Do();
+        }
+
+        public static implicit operator ValueTask<TRet>(Perform<T, TRet> it)
+        {
+            return it.DoAsync();
+        }
 
         private TRet Do()
         {

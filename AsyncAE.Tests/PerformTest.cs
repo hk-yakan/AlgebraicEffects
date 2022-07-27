@@ -1,5 +1,15 @@
+// -----------------------------------------------------------------------------
+// Copyright (c) yakan_k 2022-2022.  All Rights Reserved.
+// Licensed under the MIT license.
+// See License.txt in the project root for license information.
+// -----------------------------------------------------------------------------
+// PROJECT : AsyncAE.Tests
+// FILE : PerformTest.cs
+
 namespace AsyncAE.Tests
 {
+    using System;
+
     public class PerformTest
     {
         private static string CallStrPerformFunc()
@@ -137,7 +147,6 @@ namespace AsyncAE.Tests
                 void Action() => CallIntPerformFunc();
                 var exception = Assert.Throws<NotImplementedException>((Action)Action);
                 Assert.Equal("IntPerform is Uncaught.", exception.Message);
-
             }
         }
 
